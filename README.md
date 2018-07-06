@@ -1,12 +1,24 @@
 # Bergen
 
-Bergen makes it easier to manage data pipeline configuration. It enables you to replace code that looks like this:
+Bergen makes manage data pipeline configuration easier and cleaner. It enables you to replace code that looks like this:
 
 ```
-futbol_bs =  BlockBlobService(account_name='futbol', account_key='rglhUbRG/557nmOGwdzFEEDDEADBEEFAPwbfxgdxndzuvpk6nFSW6vKQEAarHua2HSFYWTU1DbR6pFy3EQ==')
+futbol_bs =  BlockBlobService(
+	account_name='futbol',
+	account_key='rgFEEDDEADBEEFAPwbfxgdFSW6vKQEAarHua2HSFYWTU1DbR6pFy3EQ=='
+)
 
-byte_data = futbol_bs.get_blob_to_bytes('livedata', 'sampleGameData/ball_player.csv')
-ball_df=pd.read_csv(StringIO(byte_data.content.decode('utf-8')), error_bad_lines=False)
+byte_data = futbol_bs.get_blob_to_bytes(
+	'livedata',
+	'sampleGameData/ball_player.csv'
+)
+
+ball_df = pd.read_csv(
+	StringIO(
+		byte_data.content.decode('utf-8')
+	),
+	error_bad_lines=False
+)
 ```
 
 With code abstracted to work against different datasets and that adheres to [12 factor engineering standards](https://12factor.net/) like this:
@@ -14,17 +26,28 @@ With code abstracted to work against different datasets and that adheres to [12 
 ```
 import os
 
-futbol_bs =  BlockBlobService(account_name=os.environ['CSE_ML_FUTBOL_ACCOUNTNAME'], account_key=os.environ['CSE_ML_FUTBOL_KEY'])
+futbol_bs =  BlockBlobService(
+	account_name=os.environ['CSE_ML_FUTBOL_ACCOUNTNAME'],
+	account_key=os.environ['CSE_ML_FUTBOL_KEY']
+)
 
-byte_data = futbol_bs.get_blob_to_bytes(os.environ['CSE_ML_FUTBOL_CONTAINER'], os.environ['CSE_ML_FUTBOL_PATH'])
-ball_df=pd.read_csv(StringIO(byte_data.content.decode('utf-8')), error_bad_lines=False)
+byte_data = futbol_bs.get_blob_to_bytes(
+	os.environ['CSE_ML_FUTBOL_CONTAINER'],
+	os.environ['CSE_ML_FUTBOL_PATH']
+)
+
+ball_df = pd.read_csv(
+	StringIO(
+		byte_data.content.decode('utf-8')
+	),
+	error_bad_lines=False
+)
 ```
 
 Bergen accomplishes this by storing dataset and store configuration details in a catalog that can be managed centrally:
 
 ```
 $ bergen catalog add https://cse-ml-catalog/
-[...authentication occurs...]
 $ bergen catalogs list
 
 CATALOG			DESCRIPTION
