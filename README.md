@@ -4,20 +4,20 @@ Bergen makes manage data pipeline configuration easier and cleaner. It enables y
 
 ```
 futbol_bs =  BlockBlobService(
-	account_name='futbol',
-	account_key='rgFEEDDEADBEEFAPwbfxgdFSW6vKQEAarHua2HSFYWTU1DbR6pFy3EQ=='
+    account_name='futbol',
+    account_key='rgFEEDDEADBEEFAPwbfxgdFSW6vKQEAarHua2HSFYWTU1DbR6pFy3EQ=='
 )
 
 byte_data = futbol_bs.get_blob_to_bytes(
-	'livedata',
-	'sampleGameData/ball_player.csv'
+    'livedata',
+    'sampleGameData/ball_player.csv'
 )
 
 ball_df = pd.read_csv(
-	StringIO(
-		byte_data.content.decode('utf-8')
-	),
-	error_bad_lines=False
+    StringIO(
+        byte_data.content.decode('utf-8')
+    ),
+    error_bad_lines=False
 )
 ```
 
@@ -27,20 +27,20 @@ With code abstracted to work against different datasets and that adheres to [12 
 import os
 
 futbol_bs =  BlockBlobService(
-	account_name=os.environ['CSE_ML_FUTBOL_ACCOUNTNAME'],
-	account_key=os.environ['CSE_ML_FUTBOL_KEY']
+    account_name=os.environ['CSE_ML_FUTBOL_ACCOUNTNAME'],
+    account_key=os.environ['CSE_ML_FUTBOL_KEY']
 )
 
 byte_data = futbol_bs.get_blob_to_bytes(
-	os.environ['CSE_ML_FUTBOL_CONTAINER'],
-	os.environ['CSE_ML_FUTBOL_PATH']
+    os.environ['CSE_ML_FUTBOL_CONTAINER'],
+    os.environ['CSE_ML_FUTBOL_PATH']
 )
 
 ball_df = pd.read_csv(
-	StringIO(
-		byte_data.content.decode('utf-8')
-	),
-	error_bad_lines=False
+    StringIO(
+        byte_data.content.decode('utf-8')
+    ),
+    error_bad_lines=False
 )
 ```
 
