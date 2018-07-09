@@ -24,7 +24,7 @@ sports_blob_service =  BlockBlobService(
     account_key=os.environ['CSE_ML_SPORTS_KEY']
 )
 
-byte_data = futbol_blob_service.get_blob_to_bytes(
+byte_data = sports_blob_service.get_blob_to_bytes(
     os.environ['CSE_ML_SOCCER_CONTAINER'],
     os.environ['CSE_ML_SOCCER_PATH']
 )
@@ -52,18 +52,18 @@ nyu         minst-images    MINST images
 nyu         minst-labels    MINST image labels
 ```
 
-Let's say we want to use the `futbol` dataset with a jupyter notebook to do some data science work on it. Instead of having hand copy credentials painfully and insecurely into the source code or managing brittle configuration details in local environmental variables, we can do this:
+Let's say we want to use the `soccer` dataset with a jupyter notebook to do some data science work on it. Instead of having hand copy credentials painfully and insecurely into the source code or managing brittle configuration details in local environmental variables, we can do this:
 
 ```
 $ bergen dataset loadenv soccer --catalog cse-ml
 $ jupyter notebook
 ```
 
-Under the covers, the `bergen` tool fetches the `futbol` dataset connection details from the catalog at `https://cse-ml-catalog` and populates environment variables with all of the configuration and authentication details you need to consume the dataset:
+Under the covers, the `bergen` tool fetches the `soccer` dataset connection details from the catalog at `https://cse-ml-catalog` and populates environment variables with all of the configuration and authentication details you need to consume the dataset:
 
 ```
-$ printenv | grep 'CSE_ML_FUTBOL'
-CSE_ML_SPORTS_ACCOUNTNAME=futbol
+$ printenv | grep 'CSE_ML'
+CSE_ML_SPORTS_ACCOUNTNAME=sports
 CSE_ML_SPORTS_KEY=rglhUbRG/557nmOGwdzFEEDDEADBEEFAPwbfxgdxndzuvpk6nFSW6vKQEAarHua2HSFYWTU1DbR6pFy3EQ==
 CSE_ML_SOCCER_CONTAINER=soccer
 CSE_ML_SOCCER_PATH=livedata
