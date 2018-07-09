@@ -1,6 +1,6 @@
 # Viaduct
 
-Viaduct makes manage data pipeline configuration easier and cleaner. It enables you to replace code that looks like this:
+Viaduct makes managing datasets easier for the developer. It enables you to replace code that looks like this:
 
 ```
 sports_blob_service =  BlockBlobService(
@@ -14,7 +14,7 @@ byte_data = sports_blob_service.get_blob_to_bytes(
 )
 ```
 
-With code generalized to work with the configured dataset via [12 factor engineering standards](https://12factor.net/) like this:
+With code generalized to with a dataset specified via [12 factor engineering standards](https://12factor.net/) like this:
 
 ```
 import os
@@ -30,7 +30,7 @@ byte_data = sports_blob_service.get_blob_to_bytes(
 )
 ```
 
-Viaduct accomplishes this by storing configuration details in a centrally managed catalog:
+Viaduct accomplishes this by storing these configuration details in a central catalog:
 
 ```
 $ viaduct catalog add https://cse-ml-catalog/
@@ -52,7 +52,7 @@ nyu         minst-images    MINST images
 nyu         minst-labels    MINST image labels
 ```
 
-Let's say we want to use the `soccer` dataset with a jupyter notebook to do some data science work on it. Instead of having hand copy credentials painfully and insecurely into the source code or managing brittle configuration details in local environmental variables, we can do this:
+Let's say our data science team wants to use the `soccer` dataset with a jupyter notebook. Instead of having hand copy credentials painfully and insecurely into the source code or managing brittle configuration details in local environmental variables, we can do this:
 
 ```
 $ viaduct dataset loadenv soccer --catalog cse-ml
@@ -87,11 +87,9 @@ byte_data = sports_blob_service.get_blob_to_bytes(
 
 ## Adding Datasets to a Catalog
 
-Obviously, before you can reference a dataset, you need to add it to the catalog.
+Perhaps obviously, you need to add a dataset to the catalog before you can reference it.
 
-In the previous example we had a dataset that is backed by Azure Storage Account, so the first thing we need to do is add this to the Viaduct catalog as a store.
-
-We do that by creating a definition file that looks like this:
+In the previous example we had a dataset that is backed by Azure Storage Account, so the first thing we need to do is add this store to the Viaduct catalog with a definition file like this:
 
 ```
 {
@@ -131,17 +129,17 @@ $ viaduct dataset create soccer -f soccer.json
 
 Most data pipelines involve multiple teams and systems working together in concert to produce an end result.
 
-Let's say in the previous example that our soccer training data is being collected and labeled by a data engineering seperate from the machine learning team that is experimenting with different algorithms to best model the data.
+Let's say in the previous example that our soccer training data is being collected and labeled by a data engineering team seperate from a machine learning team that is experimenting with different algorithms to best model the data.
 
-Let's also say, that the data engineering team is continually refining the data to add more training data and keeps versioned copies of it and the machine learning team always wants to train their models off the latest version of this data.
+Let's also say, that the data engineering team is continually adding more labeled training data, keeps versioned copies of the dataset, and that the machine learning team always wants to train their models off the latest version of this data.
 
-One way we could do that is to set up a process to continously communicate to the second team that there is an updated dataset using a manual process -- but that is brittle, requires orchestration, and prone to human failure.
+One way we could do that is to continously communicate to the machine learning team that there is an updated dataset using a manual process -- but that is brittle, requires orchestration, and prone to human failure.
 
-A second approach would be to just replace the entire dataset with the updated one such that the downstream system can address it the same -- but that doesn't allow you to maintain immutable versions of the data such that you can later audit what data was used to train the model.
+A second approach would be to just replace the entire dataset with the updated one such that the downstream system can address it in exactly the same manner -- but that doesn't allow you to maintain immutable versions of the data such that you can later audit what data was used to train the model.
 
-A third approach is to introduce indirection between the addressing of a dataset and the actual dataset. In this model, when the data engineering team produces a new version of a dataset, they tag it with a timestamp, and then update a second tag, 'latest' to point at this new version.
+A third approach, and the one that Viaduct provides, is to introduce indirection between the addressing of a dataset and the physical location of the dataset. In this approach, when the data engineering team produces a new version of a dataset, they tag it with a timestamp, and then update a second tag, 'latest' to point at this new version.
 
-The machine learning team can then always address the dataset using the latest tag and be assured they are using the latest training dataset.
+The machine learning team can then always address the dataset using the latest tag, and be assured they are using the latest training dataset, while still preserving the dataset used for training if it is necessary to refer to it later to understand an issue with the model in production.
 
 In Viaduct, you can accomplish this with tagged datasets. Viaduct is not opinionated on how versions of the dataset are physically arranged in storage, instead we express this in the definition of the dataset. For our soccer data example above, we do a one time adjustment our definition of our logical dataset to this:
 
@@ -155,11 +153,11 @@ In Viaduct, you can accomplish this with tagged datasets. Viaduct is not opinion
 }
 ```
 
-As our data engineering team adds versions of the dataset, they then add a tag for the latest dataset:
+Our data engineering team can then produce new immutable versions of the dataset, say at captures/2018-07-12 and then add a tag for the latest dataset that points to it with:
 
 ```
-$ viaduct tag soccer set 20180712T00000 20180712T00000
-$ viaduct tag soccer set latest 20180712T00000
+$ viaduct tag soccer set 2018-07-12 2018-07-12
+$ viaduct tag soccer set latest 2018-07-12
 ```
 
 Then, in the data scientist notebook example above, we can use the latest tag to always select the latest version of the dataset.
